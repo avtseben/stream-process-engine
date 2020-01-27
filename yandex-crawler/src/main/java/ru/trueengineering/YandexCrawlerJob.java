@@ -52,7 +52,7 @@ public class YandexCrawlerJob {
         for (Object i : items) {
             String text = (String)((Map) i).get("");
             YandexItem yandexItem = new YandexItem(text);
-            producer.sendMessage(jsonMapper.writeValueAsString(yandexItem));
+            producer.sendMessage("yandex-crawler",jsonMapper.writeValueAsString(yandexItem));
         }
     }
 }

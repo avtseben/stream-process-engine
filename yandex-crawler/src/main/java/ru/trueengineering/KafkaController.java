@@ -16,22 +16,16 @@ import java.io.IOException;
 public class KafkaController {
 
     private final Producer producer;
-    private final ObjectMapper jsonMapper = new ObjectMapper();
-    private final YandexCrawlerJob job;
+    private final FileReadJob job;
 
     @Autowired
-    KafkaController(Producer producer, YandexCrawlerJob job) {
+    KafkaController(Producer producer, FileReadJob job) {
         this.producer = producer;
         this.job = job;
     }
 
-    @PostMapping(value = "/item")
-    public void sendMessageToKafkaTopic(@RequestParam("message") String message) throws JsonProcessingException {
-        this.producer.sendMessage(jsonMapper.writeValueAsString(new YandexItem(message)));
-    }
-
     @PostMapping(value = "/job")
-    public void job() throws IOException, XMLStreamException {
+    public void job() throws IOException {
         this.job.doJob();
     }
 }
