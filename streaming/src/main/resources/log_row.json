@@ -1,0 +1,33 @@
+{
+  "@timestamp": "2020-02-06T13:06:44.538Z",
+  "X-B3-SpanId": "598aa5a859261d8f",
+  "X-B3-TraceId": "598aa5a859261d8f",
+  "X-Span-Export": "false",
+  "applicationName": "PORTAL",
+  "beat": {
+    "hostname": "dev-hrdt-08",
+    "name": "dev-hrdt-08",
+    "version": "5.6.2"
+  },
+  "fields": {
+    "env": "staging"
+  },
+  "host": "dev-hrdt-08.etr.eastbanctech.ru",
+  "hostSystem": "QAA",
+  "input_type": "log",
+  "level": "DEBUG",
+  "logger_name": "ru.eastbanctech.aspect.logging.ControllersLoggingAspect",
+  "message": "Target MS_PORTAL Method ServerSentEventsController.stream ",
+  "offset": 43841420,
+  "reqRemoteHost": "192.168.159.51",
+  "reqRequestURI": "/stream/see",
+  "sessionId": "Y2GTVzlXq/05zDeRz0oQd3xD/0smsr41Dccsxu5vIDCsY6OK08TN/OEEO/8Ab0uhXHst9HTxEtyuHFyHsEf8Tw==",
+  "source": "/opt/hrdt/json/hrdt-portal-ms-json.log",
+  "spanExportable": "false",
+  "spanId": "598aa5a859261d8f",
+  "thread_name": "http-nio-8080-exec-4",
+  "traceId": "598aa5a859261d8f",
+  "type": "log",
+  "userid": "12251",
+  "username": "hrdt_ult_qaa"
+}
