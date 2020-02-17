@@ -18,7 +18,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class YandexCrawlerJob {
@@ -38,7 +37,7 @@ public class YandexCrawlerJob {
 
     }
 
-//    @Scheduled(fixedRate = 500)
+    @Scheduled(fixedRate = 500)
     public void doJob() throws IOException, XMLStreamException {
         String xmlInput = restTemplate.getForObject("https://export.yandex.ru/last/last20x.xml",String.class);
         InputStream is = new ByteArrayInputStream(xmlInput.getBytes(StandardCharsets.UTF_8));

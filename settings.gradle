@@ -1,3 +1,4 @@
 rootProject.name = 'stream-process-engine'
 include 'yandex-crawler'
+include 'streaming'
 

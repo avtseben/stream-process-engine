@@ -7,3 +7,5 @@ SELECT * FROM yandex_last20x WHERE text = 'Гугл' EMIT CHANGES;
 Обычные pull запросы возможны только на materialized таблицах
 
 3. DESCRIBE EXTENDED pageviews_female_like_89;
+
+CREATE STREAM yandex3 (text VARCHAR) WITH (kafka_topic='yandex-crawler', value_format='JSON');
