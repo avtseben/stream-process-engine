@@ -3,11 +3,11 @@ server:
 spring:
   kafka:
     producer:
-      bootstrap-servers: stream.engine:9092
+      bootstrap-servers: dev-showone-01.etr.eastbanctech.ru:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
     consumer:
-      bootstrap-servers: stream.engine:9092
+      bootstrap-servers: dev-showone-01.etr.eastbanctech.ru:9092
       group-id: group_id
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer

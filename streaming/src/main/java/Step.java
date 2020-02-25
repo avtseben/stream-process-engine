@@ -1,9 +1,9 @@
-public class Wrapper {
+public class Step {
 
     private LogRow logRow;
     private String semantic;
 
-    public Wrapper(LogRow logRow, String semantic) {
+    public Step(LogRow logRow, String semantic) {
         this.logRow = logRow;
         this.semantic = semantic;
     }
@@ -18,6 +18,14 @@ public class Wrapper {
 
     public String getSemantic() {
         return semantic;
+    }
+
+    @Override
+    public String toString() {
+        return "Step{" +
+//                "logRow=" + logRow +
+                "semantic='" + semantic + '\'' +
+                '}';
     }
 
     public void setSemantic(String semantic) {
