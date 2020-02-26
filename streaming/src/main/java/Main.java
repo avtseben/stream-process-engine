@@ -89,13 +89,8 @@ public class Main {
                 .windowedBy(SessionWindows.with(twentySeconds))
                 .aggregate(Flow::new,
                         (key, value, aggregate) -> aggregate.addStep(value),
-                        (aggKey, aggOne, aggTwo) -> {
-                            if (aggOne.getSteps().size() > 0) System.out.println("merge! aggOne not empty " + aggOne);
-                            return aggTwo;
-                        },
+                        (aggKey, aggOne, aggTwo) -> aggTwo,
                         Materialized.with(Serdes.String(), flowSerde))
-
-
                 .toStream()
 //                .filter((key, value) -> value != null)//попадаются null
                 .peek((kw, v) -> {
