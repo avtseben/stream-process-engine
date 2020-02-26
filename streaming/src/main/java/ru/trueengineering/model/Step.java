@@ -1,3 +1,7 @@
+package ru.trueengineering.model;
+
+import ru.trueengineering.model.LogRow;
+
 public class Step {
 
     private LogRow logRow;
@@ -22,7 +26,7 @@ public class Step {
 
     @Override
     public String toString() {
-        return "Step{" +
+        return "ru.trueengineering.model.Step{" +
 //                "logRow=" + logRow +
                 "semantic='" + semantic + '\'' +
                 '}';

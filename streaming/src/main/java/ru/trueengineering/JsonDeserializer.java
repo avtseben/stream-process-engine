@@ -1,3 +1,5 @@
+package ru.trueengineering;
+
 import com.google.gson.Gson;
 import org.apache.kafka.common.serialization.Deserializer;
 

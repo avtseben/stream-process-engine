@@ -4,21 +4,23 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.kstream.Aggregator;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.kstream.Serialized;
 import org.apache.kafka.streams.kstream.SessionWindows;
-import org.apache.kafka.streams.kstream.TimeWindows;
-import org.apache.kafka.streams.kstream.Windowed;
 import org.apache.kafka.streams.state.KeyValueBytesStoreSupplier;
 import org.apache.kafka.streams.state.KeyValueStore;
-import org.apache.kafka.streams.state.SessionBytesStoreSupplier;
-import org.apache.kafka.streams.state.SessionStore;
 import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
+import ru.trueengineering.CustomTimestampExtractor;
+import ru.trueengineering.JsonDeserializer;
+import ru.trueengineering.JsonSerializer;
+import ru.trueengineering.Mapping;
+import ru.trueengineering.model.Flow;
+import ru.trueengineering.model.LogRow;
+import ru.trueengineering.model.Step;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -61,22 +63,7 @@ public class Main {
                 .withOffsetResetPolicy(EARLIEST)
         );
 
-        //Кастомный стейт стор
-//        SessionBytesStoreSupplier storeSupplier = Stores.persistentSessionStore("My1Store",day);
-//        StoreBuilder<SessionStore<String, Integer>> storeBuilder =
-//                Stores.sessionStoreBuilder(storeSupplier, Serdes.String(), Serdes.Integer());
 
-        KeyValueBytesStoreSupplier storeSupplier = Stores.inMemoryKeyValueStore("My1Store");
-        StoreBuilder<KeyValueStore<String, Integer>> storeBuilder =
-                Stores.keyValueStoreBuilder(storeSupplier, Serdes.String(), Serdes.Integer());
-
-//        Добвление changeLog для store для faultTollerance
-        Map<String, String> changeLogConfigs = new HashMap<>();
-        changeLogConfigs.put("retention.ms","172800000" );
-        changeLogConfigs.put("retention.bytes", "10000000000");
-        storeBuilder.withLoggingEnabled(changeLogConfigs);
-
-        builder.addStateStore(storeBuilder);
 
         allDataStream
                 //Фильтрация
@@ -97,17 +84,18 @@ public class Main {
 
 
 
-                //Группировка во Flow на основе пользовательской сессии
+                //Группировка во ru.trueengineering.model.Flow на основе пользовательской сессии
                 .groupBy((k, v) -> k, Serialized.with(Serdes.String(), stepSerde))
-//                .windowedBy(TimeWindows.of(twentySeconds))
                 .windowedBy(SessionWindows.with(twentySeconds))
                 .aggregate(Flow::new,
                         (key, value, aggregate) -> aggregate.addStep(value),
                         (aggKey, aggOne, aggTwo) -> {
-                            if (aggOne.steps.size() > 0) System.out.println("merge! aggOne not empty " + aggOne);
+                            if (aggOne.getSteps().size() > 0) System.out.println("merge! aggOne not empty " + aggOne);
                             return aggTwo;
                         },
                         Materialized.with(Serdes.String(), flowSerde))
+
+
                 .toStream()
 //                .filter((key, value) -> value != null)//попадаются null
                 .peek((kw, v) -> {
@@ -119,14 +107,11 @@ public class Main {
                                     "\n\t  end " + new Date(kw.window().end()) +
 
                                     "\n\tk: " + kw +
-                                    " v: " + v);
+                                    " v: " + (v==null ? v : v.getSteps().size()));
                 })
 //
                 .map((k, v) ->
                         new KeyValue<>(k.key(), v))
-                .peek((k, v) -> System.out.println(
-                        "---2.5. k: " + k +
-                                " v: " + v))
 
                 .to(  "raw-flows-log",  Produced.with(Serdes.String(), flowSerde));//Записываем сценарии
 //
@@ -164,22 +149,22 @@ public class Main {
 //                .to("step-log",  Produced.with(logSerde, wrapperSerde));
 
 //<<<BRANCHING & JOINING
-//        Predicate<String, Step> avails = (key, wrapper) -> wrapper.getSemantic().equalsIgnoreCase("Availability");
-//        Predicate<String, Step> pricings = (key, wrapper) -> wrapper.getSemantic().equalsIgnoreCase("Pricing");
+//        Predicate<String, ru.trueengineering.model.Step> avails = (key, wrapper) -> wrapper.getSemantic().equalsIgnoreCase("Availability");
+//        Predicate<String, ru.trueengineering.model.Step> pricings = (key, wrapper) -> wrapper.getSemantic().equalsIgnoreCase("Pricing");
 //
 //        final int AVAILS = 0;
 //        final int PRICINGS = 1;
-//        KStream<String, Step>[] branchedSteps = stepsKStream.selectKey((k,v) -> k).branch(avails, pricings);
+//        KStream<String, ru.trueengineering.model.Step>[] branchedSteps = stepsKStream.selectKey((k,v) -> k).branch(avails, pricings);
 //
 //        branchedSteps[AVAILS].peek((k,v)-> System.out.println("avails: " + v.getLogRow()));
 //        branchedSteps[PRICINGS].peek((k,v)-> System.out.println("pricings: " + v.getLogRow()));
 //
 //
-//        ValueJoiner<Step, Step, Flow> joiner = new StepsJoiner();
+//        ValueJoiner<ru.trueengineering.model.Step, ru.trueengineering.model.Step, ru.trueengineering.model.Flow> joiner = new StepsJoiner();
 //
 //        JoinWindows twentyMinuteWindow =  JoinWindows.of(60 * 1000 * 20);
 //
-//        KStream<String, Flow> joinedKStream = branchedSteps[AVAILS].join(branchedSteps[PRICINGS],
+//        KStream<String, ru.trueengineering.model.Flow> joinedKStream = branchedSteps[AVAILS].join(branchedSteps[PRICINGS],
 //                joiner,
 //                twentyMinuteWindow,
 //                Joined.with(Serdes.String(), wrapperSerde, wrapperSerde));//join по ключу hrdt_ult_qaa_iVb

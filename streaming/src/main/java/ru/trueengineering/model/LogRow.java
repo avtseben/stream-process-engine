@@ -1,3 +1,5 @@
+package ru.trueengineering.model;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -259,7 +261,7 @@ public class LogRow {
 
     @Override
     public String toString() {
-        return "LogRow{" +
+        return "ru.trueengineering.model.LogRow{" +
                 "timestamp='" + timestamp + '\'' +
                 ", xB3SpanId='" + xB3SpanId + '\'' +
                 ", xB3TraceId='" + xB3TraceId + '\'' +

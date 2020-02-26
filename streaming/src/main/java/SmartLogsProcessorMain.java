@@ -1,5 +1,4 @@
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KeyValue;
@@ -12,6 +11,10 @@ import org.apache.kafka.streams.processor.PunctuationType;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.Stores;
+import ru.trueengineering.CustomTimestampExtractor;
+import ru.trueengineering.JsonDeserializer;
+import ru.trueengineering.JsonSerializer;
+import ru.trueengineering.model.LogRow;
 
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;

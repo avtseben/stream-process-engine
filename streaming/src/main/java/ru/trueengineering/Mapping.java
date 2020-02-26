@@ -1,3 +1,5 @@
+package ru.trueengineering;
+
 import java.util.HashMap;
 import java.util.Map;
 

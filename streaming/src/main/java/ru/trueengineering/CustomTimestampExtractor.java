@@ -1,5 +1,8 @@
+package ru.trueengineering;
+
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.streams.processor.TimestampExtractor;
+import ru.trueengineering.model.LogRow;
 
 import java.time.Instant;
 
