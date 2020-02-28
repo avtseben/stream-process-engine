@@ -2,12 +2,12 @@ package ru.trueengineering.model;
 
 import ru.trueengineering.model.LogRow;
 
-public class Step {
+public class Action {
 
     private LogRow logRow;
     private String semantic;
 
-    public Step(LogRow logRow, String semantic) {
+    public Action(LogRow logRow, String semantic) {
         this.logRow = logRow;
         this.semantic = semantic;
     }
@@ -26,7 +26,7 @@ public class Step {
 
     @Override
     public String toString() {
-        return "ru.trueengineering.model.Step{" +
+        return "ru.trueengineering.model.Action{" +
 //                "logRow=" + logRow +
                 "semantic='" + semantic + '\'' +
                 '}';

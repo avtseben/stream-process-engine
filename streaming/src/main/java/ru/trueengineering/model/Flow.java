@@ -6,24 +6,24 @@ import java.util.stream.Collectors;
 
 public class Flow {
 
-    List<Step> steps = new ArrayList<>();
+    List<Action> actions = new ArrayList<>();
 
-    public List<Step> getSteps() {
-        return steps;
+    public List<Action> getActions() {
+        return actions;
     }
 
-    public void setSteps(List<Step> steps) {
-        this.steps = steps;
+    public void setActions(List<Action> actions) {
+        this.actions = actions;
     }
 
-    public Flow addStep(Step step) {
-        steps.add(step);
+    public Flow addStep(Action action) {
+        actions.add(action);
         return this;
     }
 
     public String buildKey() {
-        return steps.stream()
-                .map(Step::getSemantic)
+        return actions.stream()
+                .map(Action::getSemantic)
                 .collect(Collectors.joining("_"));
     }
 
@@ -31,7 +31,7 @@ public class Flow {
     public String toString() {
         String hash = super.toString();
         return hash + "{" +
-                "steps=" + steps +
+                "actions=" + actions +
                 '}';
     }
 }
