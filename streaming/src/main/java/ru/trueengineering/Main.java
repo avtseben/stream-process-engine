@@ -7,6 +7,7 @@ import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.Consumed;
+import org.apache.kafka.streams.kstream.Grouped;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
@@ -28,7 +29,7 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         Properties props = new Properties();
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "smart_ticketing_log_analyze_app");
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "smart_ticketing_log_analyze_app44");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka-demo.trueengineering.ru:9092");
         props.put(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG, CustomTimestampExtractor.class);
 
@@ -50,26 +51,26 @@ public class Main {
                 .peek((k, v) -> System.out.println(
                         "--1." + " time: " + v.getTimestamp() + " message : " + v.getMessage()));
 
-        KStream<String, Action> enricedLogs = filteredLogs
+        KStream<String, Action> enrichedLogs = filteredLogs
                 .map((k, row) ->
                         new KeyValue<>(k, new Action(row, Mapping.getSemantic(row.getMessage()))))
                 .peek((k, v) -> System.out.println(
-                        "--2." + "time: " + v.getLogRow().getTimestamp() + " actionSemantic: " + v.getSemantic()));
+                        "--2." + "time: " + v.getLogRow().getTimestamp() + " action: " + v.getSemantic()));
 
-        KTable<Windowed<String>, Flow> kTable = enricedLogs
-                .groupBy((k, v) -> k, Serialized.with(Serdes.String(), actionSerde))
+        KTable<Windowed<String>, Flow> kTable = enrichedLogs
+                .groupBy((k, action) -> action.getLogRow().getUsername() + "_" + action.getLogRow().getSessionId().substring(0,3),
+                        Serialized.with(Serdes.String(), actionSerde))
                 .windowedBy(SessionWindows.with(twentySeconds))
                 .aggregate(Flow::new,
-                        (key, value, aggregate) -> aggregate.addStep(value),
+                        (key, value, aggregate) -> aggregate.addAction(value),
                         (aggKey, aggOne, aggTwo) -> aggTwo,
                         Materialized.with(Serdes.String(), flowSerde));
 
         kTable
-                .suppress(Suppressed.untilWindowCloses(Suppressed.BufferConfig.unbounded()))
+//                .suppress(Suppressed.untilWindowCloses(Suppressed.BufferConfig.unbounded()))
+//                .suppress(Suppressed.untilTimeLimit(twentySeconds,Suppressed.BufferConfig.unbounded()))
                 .toStream()
-                .peek((kw, v) -> {
-                    System.out.println("--3. aggregated actions: " + v.getActions());
-                })
+                .peek((kw, v) -> System.out.println("--3. key " + kw + " aggregated actions: " + v.getActions()))
                 .filter((key, value) -> value != null)
                 .map((k, v) -> new KeyValue<>(v.buildKey(), v))
                 .to("smart-ticketing-business-actions", Produced.with(Serdes.String(), flowSerde));

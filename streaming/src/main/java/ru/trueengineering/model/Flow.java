@@ -16,7 +16,7 @@ public class Flow {
         this.actions = actions;
     }
 
-    public Flow addStep(Action action) {
+    public Flow addAction(Action action) {
         actions.add(action);
         return this;
     }

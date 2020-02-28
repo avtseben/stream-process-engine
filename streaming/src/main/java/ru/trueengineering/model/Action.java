@@ -26,10 +26,7 @@ public class Action {
 
     @Override
     public String toString() {
-        return "ru.trueengineering.model.Action{" +
-//                "logRow=" + logRow +
-                "semantic='" + semantic + '\'' +
-                '}';
+        return "'" + semantic + "'";
     }
 
     public void setSemantic(String semantic) {
